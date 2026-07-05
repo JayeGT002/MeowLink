@@ -12,6 +12,15 @@ export type LinkStatus = 'ok' | 'broken' | 'redirect'
 /** 标签来源类型：AI 生成 / 手动 / 混合 */
 export type TagSource = 'ai' | 'manual' | 'mixed'
 
+/** 笔记对象 */
+export interface Note {
+  id: string
+  content: string
+  createdAt: string
+  /** AI 自动生成的摘要 */
+  isAiGenerated?: boolean
+}
+
 export interface Bookmark {
   id: string
   url: string
@@ -25,11 +34,19 @@ export interface Bookmark {
   /** 标签来源标识 */
   tagSource: TagSource
   folderId: string
+  /** 文件夹完整路径，如 "开发工具/前端" */
+  folderPath?: string
   isFavorite: boolean
+  isArchived: boolean
   isDeleted: boolean
   createdAt: string
   updatedAt: string
-  notes: string
+  /** 笔记列表 */
+  notes: Note[]
+  /** 自动抓取的网页摘要（描述为空时展示） */
+  contentPreview?: string
+  /** 模拟短链接 */
+  shortUrl?: string
   visitCount: number
   lastVisitedAt: string
   linkStatus: LinkStatus
@@ -127,12 +144,13 @@ export interface AppState {
   setSelectedTag: (tag: string | null) => void
   setSortMode: (mode: SortMode) => void
 
-  addBookmark: (bookmark: Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'syncStatus' | 'notes' | 'visitCount' | 'lastVisitedAt' | 'linkStatus' | 'history'>) => void
+  addBookmark: (bookmark: Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'isArchived' | 'syncStatus' | 'notes' | 'visitCount' | 'lastVisitedAt' | 'linkStatus' | 'history' | 'contentPreview' | 'shortUrl' | 'folderPath'>) => void
   updateBookmark: (id: string, updates: Partial<Bookmark>) => void
   deleteBookmark: (id: string) => void
   restoreBookmark: (id: string) => Promise<void>
   permanentlyDeleteBookmark: (id: string) => Promise<void>
   toggleFavorite: (id: string) => void
+  toggleArchive: (id: string) => void
 
   // 弹窗操作
   openAddDialog: (bookmark?: Bookmark | null, quickAdd?: boolean) => void

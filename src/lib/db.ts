@@ -58,6 +58,21 @@ db.version(3).stores(v3Stores).upgrade(async (tx) => {
   await tx.table('changes').clear()
 })
 
+// v4: 新增 isArchived / notes / contentPreview / shortUrl 索引
+const v4Stores = {
+  bookmarks: 'id, url, title, folderId, *tags, *aiTags, isFavorite, isDeleted, isArchived, syncStatus, createdAt, updatedAt, visitCount, lastVisitedAt, linkStatus, notes, contentPreview, shortUrl',
+  folders: 'id, name, parentId, createdAt',
+  tags: 'id, &name, color',
+  changes: '++id, entityType, entityId, action, status, createdAt',
+}
+
+db.version(4).stores(v4Stores).upgrade(async (tx) => {
+  await tx.table('bookmarks').clear()
+  await tx.table('folders').clear()
+  await tx.table('tags').clear()
+  await tx.table('changes').clear()
+})
+
 /** 强制清空并重建数据库（用于修复损坏的 IndexedDB） */
 export async function resetDatabase() {
   await Dexie.delete(DB_NAME)

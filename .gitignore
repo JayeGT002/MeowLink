@@ -1,5 +1,42 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
 tsconfig.tsbuildinfo
+
+# Logs
 *.log
+npm-debug.log*
+
+# Environment files (may contain secrets)
 .env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS files
+Desktop.ini
+
+# Test coverage
+coverage/
+
+# Cache
+.eslintcache
+*.tsbuildinfo
+.vite/
+
+# Generated reports & share packages
+.trae-html-share-packages/
+meowlink-feasibility-assessment/
+meowlink-fulltext-search-evaluation/

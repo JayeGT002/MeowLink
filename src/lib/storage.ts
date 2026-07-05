@@ -5,7 +5,7 @@
 
 import MiniSearch, { type SearchResult } from 'minisearch'
 import db, { resetDatabase } from './db'
-import type { Bookmark, Folder, Tag, ChangeRecord, TagSource } from './types'
+import type { Bookmark, Folder, Tag, ChangeRecord, TagSource, Note } from './types'
 
 // ============================================================
 // MiniSearch 全文检索引擎（单例）
@@ -189,8 +189,74 @@ function faviconUrl(url: string): string {
   }
 }
 
+// 文件夹路径映射
+const folderPathMap: Record<string, string> = {
+  [FOLDER_IDS.root]: '全部书签',
+  [FOLDER_IDS.frontend]: '前端',
+  [FOLDER_IDS.reading]: '阅读清单',
+  [FOLDER_IDS.backend]: '后端',
+  [FOLDER_IDS.devops]: 'DevOps',
+  [FOLDER_IDS.design]: '设计灵感',
+  [FOLDER_IDS.ai]: 'AI 探索',
+  [FOLDER_IDS.dev]: '开发工具',
+  [FOLDER_IDS.favorites]: '收藏夹',
+  [FOLDER_IDS.unsorted]: '未分类',
+  [FOLDER_IDS.trash]: '回收站',
+}
+
+// 种子书签对应的内容预览（100-200字中文摘要）
+const contentPreviews: string[] = [
+  'GitHub 是全球最大的代码托管和协作平台，提供 Git 仓库托管、问题追踪、代码审查和 CI/CD 流水线功能。超过一亿开发者在这里托管开源项目，是技术社区的核心枢纽，也是企业级 DevOps 工作流的重要组成部分。',
+  'React 是由 Meta 维护的声明式 UI 库，采用组件化架构和虚拟 DOM 实现高性能渲染。新版文档重点介绍 Hooks、并发渲染和服务器组件，提供交互式沙盒和逐步教程，帮助开发者快速上手现代 React 开发。',
+  'Tailwind CSS 是一款实用优先的 CSS 框架，通过直接在 HTML 中组合原子类来快速构建现代界面。它提供完整的设计系统，包括响应式断点、暗色模式、自定义主题和 JIT 引擎，大幅减少编写自定义 CSS 的需求。',
+  'Figma 是基于浏览器的协作式界面设计工具，支持实时多人编辑、矢量绘图、原型交互和设计系统管理。插件生态丰富，社区资源活跃，已成为 UI/UX 设计领域的行业标准工具。',
+  'Dribbble 是全球领先的设计师作品展示与灵感发现社区，涵盖 UI/UX、插画、品牌、动效等领域的优秀作品。设计师通过邀请制展示自己的作品集，企业和团队可发布招聘信息寻找创意人才。',
+  'Vercel 是前端云平台，提供从开发到部署的一站式解决方案。支持 Next.js、SvelteKit 等主流框架的零配置部署，内置边缘函数、分析、预览环境和自动 HTTPS，让前端团队专注于产品而非基础设施。',
+  'Notion 是一款集文档、数据库、知识库和项目管理于一体的协作工具。灵活的模块化编辑器支持 Markdown、看板、日历、表格等多种视图，个人和团队均可通过 Notion 构建定制化的工作流程。',
+  'Linear 是一款专为软件开发团队设计的现代化项目管理工具，以极快的响应速度和简洁的 UI 著称。支持快捷键操作、自动化工作流、Sprint 规划和跨团队协作，帮助团队高效交付产品。',
+  'Framer 是一款无需编写代码即可设计和发布网站的交互设计工具。内置强大的动画引擎和组件系统，支持从 Figma 直接导入设计稿，适合设计师快速创建高保真营销页面和作品集。',
+  'shadcn/ui 是一个设计精美的 React 组件集合，采用复制粘贴而非依赖安装的方式集成。基于 Radix UI 和 Tailwind CSS 构建，组件可完全自定义，支持无障碍访问和主题切换。',
+  'TypeScript 是 JavaScript 的超集，添加了静态类型检查、接口、泛型等特性。官方文档提供从入门到高级的完整指南，包括类型体操、声明文件编写和配置参考，是企业级前端开发的标配语言。',
+  'Next.js 是 Vercel 推出的 React 全栈框架，支持静态生成、服务端渲染、增量静态再生成和 API 路由。新版 App Router 基于 React Server Components 架构，提供布局嵌套、流式渲染等现代化功能。',
+  'Node.js 是开源跨平台的 JavaScript 运行时环境，基于 Chrome V8 引擎构建。它使 JavaScript 能够在服务器端运行，通过事件驱动和非阻塞 I/O 实现高并发，拥有 npm 生态系统中超过百万个包。',
+  'Docker 是领先的容器化平台，允许开发者将应用和依赖打包为轻量级容器。配合 Docker Compose 和 Kubernetes，已成为微服务架构和 CI/CD 的核心基础设施，实现一致的开发和生产环境。',
+  'Prisma 是下一代 Node.js 和 TypeScript ORM，提供类型安全的数据库客户端和声明式数据建模。支持 PostgreSQL、MySQL、MongoDB 等多种数据库，通过自动迁移工具大幅提升开发体验和数据操作安全性。',
+  'Vitest 是由 Vite 驱动的极速单元测试框架，兼容 Jest 的 API 和生态系统。原生支持 TypeScript、ESM 和 HMR 热更新，配置简单且测试执行速度快，是 Vite 项目的首选测试方案。',
+  'Zustand 是一款轻量级的 React 状态管理库，API 简洁直观，无需 Provider 包装。支持基于 Hook 的选择性订阅和不可变更新，代码量极少，性能优秀，适合中小型应用和组件级状态管理。',
+  'TanStack Query 是强大的异步状态管理库，专注于服务端状态同步。提供自动缓存、重试、轮询、分页和乐观更新等功能，让开发者摆脱手动管理请求状态的困境，大幅简化数据获取逻辑。',
+  'MDN Web Docs 是 Mozilla 维护的前端技术文档平台，涵盖 HTML、CSS、JavaScript 和 Web API 的完整参考。文档权威且详尽，包含浏览器兼容性数据和交互式示例，是前端开发者必备的参考资源。',
+  'CSS-Tricks 是专注于 CSS 和前端开发的技术博客，每天发布高质量教程和技巧文章。内容涵盖布局、动画、响应式设计、CSS 新特性等主题，深入浅出，配有丰富的代码演示和视觉示例。',
+  'Raycast 是 macOS 上的效率启动器，通过快捷键快速搜索文件、执行脚本和集成第三方工具。支持自定义扩展和快捷指令，极大提升开发者和创意工作者的日常工作效率。',
+  'Radix UI 是无样式无障碍 React 组件库，提供对话框、菜单、弹出框等常见 UI 模式的原语。组件遵循 WAI-ARIA 标准，支持键盘导航和屏幕阅读器，开发者可在此基础上自由定制样式。',
+  'Supabase 是开源 Firebase 替代方案，以 PostgreSQL 为核心提供数据库、身份认证、实时订阅和文件存储。支持自托管部署，提供 SQL 编辑器和自动生成的 RESTful API，简化后端开发流程。',
+  'Bun 是新兴的 JavaScript 运行时和工具链，集成打包器、转译器和包管理器。基于 JavaScriptCore 引擎，启动速度极快，原生支持 TypeScript 和 JSX，目标是替代 Node.js 生态中的多个工具。',
+  'Vite 是下一代前端构建工具，利用浏览器原生 ES 模块实现极速冷启动和热模块替换。基于 esbuild 预构建依赖，Rollup 打包生产代码，支持 Vue、React、Svelte 等多框架开箱即用。',
+  'Astro 是专为内容驱动网站设计的现代框架，默认零 JavaScript 输出。支持在页面中使用 React、Vue、Svelte 等组件，通过组件岛架构实现按需水合，大幅提升页面性能和 Lighthouse 评分。',
+  'Josh Comeau 的个人博客以交互式教程闻名，深入讲解 CSS 动画、React 模式和前端工程化。文章配有精美的可视化演示和动手练习，被许多开发者誉为最佳前端学习资源。',
+  'Behance 是 Adobe 旗下的创意作品展示与发现平台，涵盖平面设计、品牌、插画、摄影、UI/UX 等创意领域。设计师通过项目展示获得行业曝光，企业和品牌在此发掘优秀的创意人才。',
+  'Can I Use 提供浏览器对前端技术支持的兼容性数据表，覆盖 CSS 属性、JavaScript API 和 HTML 特性。数据及时更新，支持全球和各地区使用率统计，是前端兼容性决策的重要参考依据。',
+  'Stack Overflow 是全球最大的开发者问答社区，采用投票机制确保高质量答案。涵盖几乎所有编程语言和技术栈，是开发者解决技术问题的首选平台，也是技术知识积累的重要来源。',
+]
+
+// 模拟笔记生成
+function generateNotes(seed: number): Note[] {
+  const count = 1 + (seed % 3) // 1-3 条
+  const noteContents = [
+    '这个资源非常实用，收藏了慢慢看。',
+    '已经按照教程实践了一遍，效果很好，推荐给大家。',
+    '需要进一步研究源码的实现细节再评估。',
+    '分享给团队成员后，大家反馈都不错。',
+    '过段时间再回顾一下，加深理解。',
+  ]
+  return Array.from({ length: count }, (_, j) => ({
+    id: `note-${seed}-${j}`,
+    content: noteContents[(seed + j) % noteContents.length],
+    createdAt: randomDate(30),
+  }))
+}
+
 // 30 条种子书签数据（含 aiTags 和 tagSource）
-type SeedBookmark = Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'syncStatus' | 'notes' | 'visitCount' | 'lastVisitedAt' | 'linkStatus' | 'history'>
+type SeedBookmark = Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'syncStatus' | 'notes' | 'visitCount' | 'lastVisitedAt' | 'linkStatus' | 'history' | 'isArchived' | 'contentPreview' | 'shortUrl' | 'folderPath'>
 
 const SEED_BOOKMARKS: SeedBookmark[] = [
   { url: 'https://github.com', title: 'GitHub: 全球最大的代码托管平台', description: '数百万开发者聚集的代码托管与协作平台，开源项目的发源地。', coverImage: coverUrl(1), favicon: faviconUrl('https://github.com'), tags: ['工具', '开源'], aiTags: ['开源', '工具', '代码'], tagSource: 'ai', folderId: FOLDER_IDS.dev, isFavorite: true },
@@ -299,7 +365,11 @@ export const storage = {
       createdAt: randomDate(365),
       updatedAt: randomDate(30),
       isDeleted: false,
-      notes: i < 8 ? '' : '这是 Demo User 的笔记记录。快速切换选中书签以查看不同状态。',
+      isArchived: false,
+      contentPreview: contentPreviews[i] || '',
+      shortUrl: 'mwl.ink/' + Math.random().toString(36).slice(2, 8),
+      folderPath: folderPathMap[b.folderId] || b.folderId || '',
+      notes: i >= 8 ? generateNotes(i) : [],
       visitCount: Math.floor(Math.random() * 50) + 1,
       lastVisitedAt: randomDate(7),
       linkStatus: linkStatuses[i % linkStatuses.length],
@@ -378,7 +448,7 @@ export const storage = {
     return results
   },
 
-  async addBookmark(data: Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'syncStatus' | 'notes' | 'visitCount' | 'lastVisitedAt' | 'linkStatus' | 'history'>): Promise<Bookmark> {
+  async addBookmark(data: Omit<Bookmark, 'id' | 'createdAt' | 'updatedAt' | 'isDeleted' | 'isArchived' | 'syncStatus' | 'notes' | 'visitCount' | 'lastVisitedAt' | 'linkStatus' | 'history' | 'contentPreview' | 'shortUrl' | 'folderPath'>): Promise<Bookmark> {
     const now = new Date().toISOString()
     const bookmark: Bookmark = {
       ...data,
@@ -386,7 +456,10 @@ export const storage = {
       createdAt: now,
       updatedAt: now,
       isDeleted: false,
-      notes: '',
+      isArchived: false,
+      notes: [] as Note[],
+      contentPreview: (data as any).contentPreview || '',
+      shortUrl: 'mwl.ink/' + Math.random().toString(36).slice(2, 8),
       visitCount: 1,
       lastVisitedAt: now,
       linkStatus: 'ok',
@@ -448,6 +521,13 @@ export const storage = {
     if (!existing) return
     await db.bookmarks.update(id, { isFavorite: !existing.isFavorite, updatedAt: new Date().toISOString() })
     await recordChange('bookmark', id, 'update', { isFavorite: !existing.isFavorite })
+  },
+
+  async toggleArchive(id: string): Promise<void> {
+    const existing = await db.bookmarks.get(id)
+    if (!existing) return
+    await db.bookmarks.update(id, { isArchived: !existing.isArchived, updatedAt: new Date().toISOString() })
+    await recordChange('bookmark', id, 'update', { isArchived: !existing.isArchived })
   },
 
   async getFolders(): Promise<Folder[]> {

@@ -7,37 +7,35 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 // ============================================================
 
 export type ThemeMode = 'light' | 'dark' | 'system'
-export type AccentColor = 'slate' | 'violet' | 'indigo' | 'blue' | 'emerald' | 'orange' | 'red' | 'pink'
-export type DensityMode = 'compact' | 'comfortable' | 'spacious'
-export type DateFormat = 'zh' | 'us' | 'iso'
 export type LanguageMode = 'zh-CN' | 'en' | 'ja'
-export type FontMode = 'system' | 'sans' | 'mono'
 export type SyncFrequency = 'realtime' | '15min' | 'hourly' | 'manual'
 export type ConflictResolution = 'cloud' | 'local' | 'ask'
-export type DefaultView = 'card' | 'list'
 export type SettingsSection =
+  | 'user'
   | 'general'
-  | 'appearance'
+  | 'ai'
   | 'data'
   | 'sync'
-  | 'shortcuts'
   | 'about'
 
 export interface SettingsState {
-  // 通用
-  language: LanguageMode
-  dateFormat: DateFormat
-  defaultView: DefaultView
-  defaultFolder: string
-  newBookmarkFolder: string
-  desktopNotifications: boolean
-  favoriteUpdateNotify: boolean
+  // 用户设置
+  avatar: string
+  nickname: string
+  password: string
+  f2aEnabled: boolean
 
-  // 外观
+  // 通用设置
+  language: LanguageMode
   theme: ThemeMode
-  accentColor: AccentColor
-  density: DensityMode
-  font: FontMode
+
+  // AI 设置
+  aiEnabled: boolean
+  aiBaseUrl: string
+  aiApiKey: string
+  aiModel: string
+  aiDefaultLanguage: string
+  aiPrompt: string
 
   // 同步
   autoSync: boolean
@@ -49,18 +47,20 @@ export interface SettingsState {
 }
 
 const defaultSettings: SettingsState = {
-  language: 'zh-CN',
-  dateFormat: 'zh',
-  defaultView: 'list',
-  defaultFolder: 'folder-root',
-  newBookmarkFolder: 'folder-unsorted',
-  desktopNotifications: false,
-  favoriteUpdateNotify: false,
+  avatar: '',
+  nickname: '',
+  password: '',
+  f2aEnabled: false,
 
+  language: 'zh-CN',
   theme: 'light',
-  accentColor: 'slate',
-  density: 'comfortable',
-  font: 'system',
+
+  aiEnabled: false,
+  aiBaseUrl: '',
+  aiApiKey: '',
+  aiModel: '',
+  aiDefaultLanguage: 'zh-CN',
+  aiPrompt: '',
 
   autoSync: true,
   syncFrequency: 'realtime',
@@ -98,7 +98,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   })
   const [saveToast, setSaveToast] = useState(false)
 
-  // 持久化到 localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))

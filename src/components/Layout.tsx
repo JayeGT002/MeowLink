@@ -34,6 +34,11 @@ export default function Layout({ children, onOpenSettings }: LayoutProps) {
   // 移动端抽屉状态
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
+  // 同步移动端抽屉状态到 store，供其他组件（如 FAB）判断
+  useEffect(() => {
+    useStore.setState({ sidebarOpen: mobileDrawerOpen })
+  }, [mobileDrawerOpen])
+
   // 选择书签时自动关闭移动端抽屉（跳转到详情面板）
   useEffect(() => {
     if (selectedBookmarkId) {

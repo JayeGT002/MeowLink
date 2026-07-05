@@ -307,10 +307,10 @@ export function exportBookmarksAsENEX(
     if (bm.description) {
       contentLines.push('        <div>' + xmlEscape(bm.description) + '</div>')
     }
-    if (bm.notes) {
+    if (bm.notes && bm.notes.length > 0) {
       contentLines.push('        <hr/>')
       contentLines.push('        <div><b>备注：</b></div>')
-      contentLines.push('        <div>' + xmlEscape(bm.notes) + '</div>')
+      contentLines.push('        <div>' + xmlEscape(bm.notes.map(n => n.content).join('\n')) + '</div>')
     }
 
     const enNote = [

@@ -52,20 +52,14 @@ export const useStore = create<AppState>()(
       initialize: async () => {
         try {
           const data = await storage.initialize()
-          let defaultFolder = null as string | null
-          let viewMode: ViewMode = 'list'
           let autoTagEnabled = true
           try {
             const raw = localStorage.getItem('meowlink-settings')
             if (raw) {
               const settings = JSON.parse(raw)
-              if (settings.defaultFolder && settings.defaultFolder !== 'folder-root') {
-                defaultFolder = settings.defaultFolder
-              }
-              if (settings.defaultView === 'card' || settings.defaultView === 'list') {
-                viewMode = settings.defaultView
-              }
-              if (typeof settings.autoTagEnabled === 'boolean') {
+              if (typeof settings.aiEnabled === 'boolean') {
+                autoTagEnabled = settings.aiEnabled
+              } else if (typeof settings.autoTagEnabled === 'boolean') {
                 autoTagEnabled = settings.autoTagEnabled
               }
             }
@@ -75,8 +69,6 @@ export const useStore = create<AppState>()(
             folders: data.folders,
             tags: data.tags,
             isLoading: false,
-            selectedFolderId: defaultFolder,
-            viewMode,
             autoTagEnabled,
           })
         } catch (error) {
@@ -142,6 +134,15 @@ export const useStore = create<AppState>()(
         set((s) => ({
           bookmarks: s.bookmarks.map((b) =>
             b.id === id ? { ...b, isFavorite: !b.isFavorite } : b
+          ),
+        }))
+      },
+
+      toggleArchive: async (id) => {
+        await storage.toggleArchive(id)
+        set((s) => ({
+          bookmarks: s.bookmarks.map((b) =>
+            b.id === id ? { ...b, isArchived: !b.isArchived } : b
           ),
         }))
       },
@@ -222,13 +223,6 @@ export const useStore = create<AppState>()(
       // ---------- 设置操作 ----------
       setAutoTagEnabled: (enabled: boolean) => {
         set({ autoTagEnabled: enabled })
-        // 持久化到 localStorage
-        try {
-          const raw = localStorage.getItem('meowlink-settings')
-          const settings = raw ? JSON.parse(raw) : {}
-          settings.autoTagEnabled = enabled
-          localStorage.setItem('meowlink-settings', JSON.stringify(settings))
-        } catch {}
       },
     }),
     {
@@ -237,7 +231,7 @@ export const useStore = create<AppState>()(
         viewMode: state.viewMode,
         theme: state.theme,
         sidebarCollapsed: state.sidebarCollapsed,
-        // autoTagEnabled 不在 persist partialize 里，改为手动持久化
+        autoTagEnabled: state.autoTagEnabled,
       }),
     }
   )

@@ -77,6 +77,8 @@ export default function BookmarkGrid() {
     setSelectedTag,
     setSearchQuery,
     openAddDialog,
+    sidebarOpen,
+    selectedBookmarkId,
   } = useStore()
 
   const debouncedSearch = useDebounce(searchQuery, 300)
@@ -377,8 +379,9 @@ export default function BookmarkGrid() {
 
       {/* ============================================================
           移动端浮动添加按钮（FAB）— sm 以下可见
+          侧边栏或详情面板打开时隐藏
           ============================================================ */}
-      {!isTrashView && (
+      {!isTrashView && !sidebarOpen && !selectedBookmarkId && (
         <Button
           variant="default"
           size="icon"

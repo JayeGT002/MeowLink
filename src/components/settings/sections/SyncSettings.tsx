@@ -4,9 +4,7 @@ import { useSettings } from '@/contexts/SettingsContext'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Cloud, User } from 'lucide-react'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Cloud } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function SyncSettings() {
@@ -14,26 +12,6 @@ export default function SyncSettings() {
 
   return (
     <div className="space-y-8">
-      {/* 账户 */}
-      <section>
-        <h3 className="text-base font-semibold mb-4">账户</h3>
-        <div className="flex items-center gap-3 p-4 rounded-xl border bg-muted/20">
-          <Avatar className="h-10 w-10 bg-foreground/10">
-            <AvatarFallback className="bg-foreground/15 text-foreground/60 text-sm font-medium">DU</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">Demo User</p>
-            <p className="text-xs text-muted-foreground">demo@meowlink.local</p>
-          </div>
-          <Button variant="outline" size="sm" className="gap-1.5">
-            <User className="w-3.5 h-3.5" />
-            退出登录
-          </Button>
-        </div>
-      </section>
-
-      <div className="border-t" />
-
       {/* 同步设置 */}
       <section>
         <h3 className="text-base font-semibold mb-4">同步设置</h3>
