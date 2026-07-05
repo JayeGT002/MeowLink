@@ -1,0 +1,283 @@
+/* ============================================================
+ * 阿里巴巴普惠体 3.0 — 字体声明
+ * ============================================================ */
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3.0';
+  src: local('Alibaba PuHuiTi 3.0'),
+       local('阿里巴巴普惠体'),
+       local('AlibabaPuHuiTi-3.0-55-Regular'),
+       url('https://cdn.jsdelivr.net/npm/alibaba-puhuiti-3.0@1.1.0/AlibabaPuHuiTi-3.0-55-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3.0';
+  src: local('Alibaba PuHuiTi 3.0 Medium'),
+       local('阿里巴巴普惠体 Medium'),
+       local('AlibabaPuHuiTi-3.0-65-Medium'),
+       url('https://cdn.jsdelivr.net/npm/alibaba-puhuiti-3.0@1.1.0/AlibabaPuHuiTi-3.0-65-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3.0';
+  src: local('Alibaba PuHuiTi 3.0 SemiBold'),
+       local('阿里巴巴普惠体 SemiBold'),
+       local('AlibabaPuHuiTi-3.0-75-SemiBold'),
+       url('https://cdn.jsdelivr.net/npm/alibaba-puhuiti-3.0@1.1.0/AlibabaPuHuiTi-3.0-75-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+ * 纯黑白灰色彩体系 — CSS 变量
+ * 灰阶从 #fff → #000，8 级文字 + 6 级背景
+ * ============================================================ */
+@layer base {
+  :root {
+    /* 背景色阶（浅→深） */
+    --background: 0 0% 100%;          /* #ffffff 页面底色 */
+    --card: 0 0% 98%;                 /* #fafafa 卡片底色 */
+    --popover: 0 0% 100%;             /* #ffffff 浮层底色 */
+
+    /* 前景文字色阶 */
+    --foreground: 0 0% 4%;            /* #0a0a0a 主文字 */
+    --card-foreground: 0 0% 4%;
+    --popover-foreground: 0 0% 4%;
+
+    /* 主色 — 深灰，用于主要按钮/强调 */
+    --primary: 0 0% 9%;               /* #171717 */
+    --primary-foreground: 0 0% 98%;   /* #fafafa */
+
+    /* 次级背景 — 浅灰 */
+    --secondary: 0 0% 96%;            /* #f5f5f5 */
+    --secondary-foreground: 0 0% 9%;
+
+    /* 柔和区 — 禁用/占位 */
+    --muted: 0 0% 96%;                /* #f5f5f5 */
+    --muted-foreground: 0 0% 45%;     /* #737373 */
+
+    /* 高亮区 — hover/选中 */
+    --accent: 0 0% 92%;               /* #ebebeb */
+    --accent-foreground: 0 0% 9%;
+
+    /* 危险色 */
+    --destructive: 0 72% 51%;         /* #dc2626 */
+    --destructive-foreground: 0 0% 98%;
+
+    /* 边框/输入框 */
+    --border: 0 0% 89%;               /* #e3e3e3 */
+    --input: 0 0% 89%;
+    --ring: 0 0% 4%;
+
+    /* 全局圆角 */
+    --radius: 0.625rem;               /* 10px */
+
+    /* ——— 侧栏专用 ——— */
+    --sidebar: 0 0% 97%;              /* #f7f7f7 */
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 85%;       /* #d9d9d9 — 选中态 */
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-hover: 0 0% 89%;        /* #e3e3e3 — 悬停态，介于选中与背景之间 */
+    --sidebar-border: 0 0% 93%;       /* #ededed */
+    --sidebar-primary: 0 0% 9%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-ring: 0 0% 4%;
+
+    /* 阴影色 */
+    --shadow-color: 0 0% 0%;
+  }
+
+  .dark {
+    --background: 0 0% 3%;            /* #080808 */
+    --card: 0 0% 6%;                  /* #0f0f0f */
+    --popover: 0 0% 4%;               /* #0a0a0a */
+
+    --foreground: 0 0% 93%;           /* #ededed */
+    --card-foreground: 0 0% 93%;
+    --popover-foreground: 0 0% 93%;
+
+    --primary: 0 0% 85%;              /* #d9d9d9 */
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 15%;            /* #262626 */
+    --secondary-foreground: 0 0% 93%;
+
+    --muted: 0 0% 13%;                /* #212121 */
+    --muted-foreground: 0 0% 55%;     /* #8c8c8c */
+
+    --accent: 0 0% 15%;               /* #262626 */
+    --accent-foreground: 0 0% 93%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 93%;
+
+    --border: 0 0% 20%;               /* #333333 */
+    --input: 0 0% 20%;
+    --ring: 0 0% 60%;
+
+    --sidebar: 0 0% 5%;               /* #0d0d0d */
+    --sidebar-foreground: 0 0% 93%;
+    --sidebar-accent: 0 0% 18%;       /* #2e2e2e */
+    --sidebar-accent-foreground: 0 0% 93%;
+    --sidebar-hover: 0 0% 13%;        /* #212121 — 悬停态 */
+    --sidebar-border: 0 0% 14%;       /* #242424 */
+    --sidebar-primary: 0 0% 80%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-ring: 0 0% 60%;
+
+    --shadow-color: 0 0% 0%;
+  }
+}
+
+/* ============================================================
+ * 基础重置
+ * ============================================================ */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 移动端优化 */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    /* 安全区支持 */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* 阻止 iOS 橡皮筋效果导致的下拉刷新 */
+  html {
+    overscroll-behavior: none;
+  }
+
+  /* 全局输入框/文本框聚焦态 — 与 BookmarkDetailPanel 统一 */
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  textarea,
+  select {
+    @apply transition-all duration-200;
+    /* 移动端输入框不自动缩放 */
+    font-size: 16px !important;
+  }
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    @apply outline-none border-foreground/30 bg-muted;
+  }
+
+  /* 全局 placeholder */
+  ::placeholder {
+    @apply text-muted-foreground/60;
+  }
+
+  /* 移动端按钮最小触摸区域 */
+  button {
+    touch-action: manipulation;
+  }
+}
+
+/* ============================================================
+ * 辅助工具类
+ * ============================================================ */
+@layer utilities {
+  /* 隐藏滚动条但保持可滚动 */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================
+ * 叠加式滚动条 — 静止时隐藏，hover / 滚动时显示
+ * ============================================================ */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  transition: background 0.3s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.15);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.32);
+}
+
+.dark *:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.22);
+}
+
+.dark *:hover::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.40);
+}
+
+/* Firefox — 细滚动条 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* ============================================================
+ * 全局阴影系统 (Tailwind 原生不支持 CSS 变量叠加层阴影，
+ * 故在此统一声明)
+ * ============================================================ */
+@layer base {
+  .shadow-hairline {
+    box-shadow: 0 1px 2px -1px hsl(var(--shadow-color) / 0.04);
+  }
+  .shadow-subtle {
+    box-shadow: 0 1px 2px 0 hsl(var(--shadow-color) / 0.04);
+  }
+  .shadow-card {
+    box-shadow:
+      0 1px 2px 0 hsl(var(--shadow-color) / 0.05),
+      0 1px 3px -1px hsl(var(--shadow-color) / 0.05);
+  }
+  .shadow-raised {
+    box-shadow:
+      0 2px 4px -1px hsl(var(--shadow-color) / 0.06),
+      0 1px 2px -1px hsl(var(--shadow-color) / 0.05);
+  }
+  .shadow-float {
+    box-shadow:
+      0 8px 24px -8px hsl(var(--shadow-color) / 0.08),
+      0 4px 8px -4px hsl(var(--shadow-color) / 0.05);
+  }
+  .shadow-overlay {
+    box-shadow:
+      0 16px 40px -10px hsl(var(--shadow-color) / 0.10),
+      0 8px 16px -8px hsl(var(--shadow-color) / 0.06);
+  }
+  .shadow-modal {
+    box-shadow: 0 24px 64px -12px hsl(var(--shadow-color) / 0.14);
+  }
+}
